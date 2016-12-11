@@ -1,0 +1,33 @@
+<html>
+<head>
+    <script language="JavaScript">
+            var socket = new WebSocket("ws://localhost:8080/ws-echo")
+
+            socket.onopen = function() {
+                console.log("> connected")
+            }
+            socket.onmessage = function(event) {
+                console.log("> " + event.data)
+                document.getElementById("responsebox").append(event.data)
+            }
+            socket.onclose = function(event) {
+                if(event.wasClean) {
+                    console.log("> clean ")
+                } else {
+                    console.log("> socket error")
+                }
+            }
+
+            function send() {
+                var msg = document.getElementById("msgbox").value
+                socket.send(msg)
+            }
+
+    </script>
+</head>
+<body>
+    <input id="msgbox" type="text"/>
+    <button value="press" onclick="send()">press</button>
+    <p id="responsebox"/>
+</body>
+</html>

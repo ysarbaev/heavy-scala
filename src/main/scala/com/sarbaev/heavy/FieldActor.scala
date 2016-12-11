@@ -1,35 +1,60 @@
 package com.sarbaev.heavy
 
-import akka.actor.{ActorRef, Actor}
+import akka.actor.{Actor, ActorRef}
 import akka.actor.Actor.Receive
+import com.sarbaev.heavy.Actions.{GoDo, GoLe, GoRi, GoUp}
 
 import scala.collection.mutable
 
 /**
- * Created by ysarbaev on 8/3/16.
- */
-class FieldActor(x: Int, y: Int, xSize: Int, ySize: Int) extends Actor {
+  * Created by ysarbaev on 8/3/16.
+  */
+class FieldActor(xSize: Int, ySize: Int) extends Actor {
 
-//    private var topNei: Option[ActorRef] = None
-//    private var leftNei: Option[ActorRef] = None
-//    private var bottNei: Option[ActorRef] = None
-//    private var rightNei: Option[ActorRef] = None
+  final val UP_DY = -1
+  final val DO_DY = 1
+  final val RI_DX = 1
+  final val LE_DX = -1
 
-    private val field = Array.ofDim[Byte](xSize, ySize)
+  private val field = Array.ofDim[Byte](xSize, ySize)
+  private val players = mutable.Map[Int, Player]()
 
-    private val vehicles = mutable.Map[Int, (Vehicle, Int, Int)]()
+  override def receive: Receive = {
 
-    override def receive: Receive = {
-        case MoveUp(vid) if vehicles.contains(vid) =>
-
-            val (vehicle, x, y) = vehicles(vid)
-            vehicles(vid) = (vehicle, x, y - 1)
-
-        case MoveRight(vid) =>
-        case MoveDown(vid) =>
-        case MoveLeft(vid) =>
-//        case Transfer(vehicle) =>
-
-        case unknown => println("Unknown command :"+unknown)
+    case GoUp(pid) if players.contains(pid) => {
+      val player = players(pid)
+      if (checkPosition(player, 0, UP_DY)) {
+        player.y += UP_DY
+      }
     }
+
+    case GoRi(pid) if players.contains(pid) => {
+      val player = players(pid)
+      if (checkPosition(player, RI_DX, 0)) {
+        player.x += RI_DX
+      }
+    }
+
+    case GoDo(pid) if players.contains(pid) => {
+      val player = players(pid)
+      if (checkPosition(player, 0, DO_DY)) {
+        player.y += DO_DY
+      }
+    }
+    case GoLe(pid) if players.contains(pid) => {
+      val player = players(pid)
+      if (checkPosition(player, LE_DX, 0)) {
+        player.x += LE_DX
+      }
+    }
+
+    case unknown => println("Unknown command :" + unknown)
+  }
+
+  //TODO
+  def checkPosition(player: Player,
+    dx: Int,
+    dy: Int): Boolean = {
+    true
+  }
 }
